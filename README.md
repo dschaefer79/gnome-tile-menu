@@ -29,7 +29,8 @@ assistant: all code, packaging and documentation.
 - **Gap** between windows, in pixels or millimetres.
 - **Keyboard shortcuts** for every action, shown in the menu. Default keys:
   Super+Alt+A (auto), Super+Alt+2/3/4 (columns), Super+Ctrl+Alt+2/3 (rows),
-  Super+Ctrl+2/3/4 (grids), Super+Alt+0 (restore).
+  Super+Ctrl+Shift+2/3/4 (grids), Super+Alt+R (restore). They avoid
+  GNOME's own keys, such as Super+Ctrl+digit and Super+Alt+0.
 - **Disable tiling** turns all tiling and snapping off; Restore still works.
 
 ## Resolution
@@ -57,7 +58,7 @@ assistant: all code, packaging and documentation.
 ## Building the RPM
 
 ```
-git archive --prefix=gnome-tile-menu-1.15/ -o ~/rpmbuild/SOURCES/gnome-tile-menu-1.15.tar.gz HEAD
+git archive --prefix=gnome-tile-menu-1.16/ -o ~/rpmbuild/SOURCES/gnome-tile-menu-1.16.tar.gz HEAD
 rpmbuild -ba gnome-tile-menu.spec
 ```
 

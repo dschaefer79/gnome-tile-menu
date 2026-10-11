@@ -5,7 +5,7 @@
 %global uuid tilemenu@dschaefer79
 
 Name:           gnome-tile-menu
-Version:        1.15
+Version:        1.16
 Release:        1%{?dist}
 Summary:        GNOME Shell top bar menus for window tiling and screen resolution
 License:        GPL-3.0-or-later
@@ -79,6 +79,12 @@ python3 -m json.tool %{buildroot}%{_datadir}/gnome-shell/extensions/%{uuid}/meta
 %{_datadir}/gnome-shell/extensions/%{uuid}/
 
 %changelog
+* Sun Oct 11 2026 dschaefer79 <7472357+dschaefer79@users.noreply.github.com> - 1.16-1
+- Default shortcuts no longer clash with GNOME 51's own: the grids are
+  Super+Ctrl+Shift+2/3/4 (GNOME opens a new window of a dash app with
+  Super+Ctrl+digit) and Restore is Super+Alt+R (Super+Alt+0 resets the
+  magnifier). Tested on Fedora 45 with GNOME Shell 51
+
 * Sun Oct 11 2026 dschaefer79 <7472357+dschaefer79@users.noreply.github.com> - 1.15-1
 - License: GPL-3.0-or-later (was MIT), with the license text and a
   header in every source file

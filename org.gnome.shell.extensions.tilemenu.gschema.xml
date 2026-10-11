@@ -131,19 +131,19 @@
       <summary>Tile in 2 rows</summary>
     </key>
     <key name="shortcut-tile-grid-2x2" type="as">
-      <default>['&lt;Super&gt;&lt;Primary&gt;2']</default>
+      <default>['&lt;Super&gt;&lt;Primary&gt;&lt;Shift&gt;2']</default>
       <summary>Tile in 2 × 2 grid</summary>
     </key>
     <key name="shortcut-tile-grid-3x2" type="as">
-      <default>['&lt;Super&gt;&lt;Primary&gt;3']</default>
+      <default>['&lt;Super&gt;&lt;Primary&gt;&lt;Shift&gt;3']</default>
       <summary>Tile in 3 × 2 grid</summary>
     </key>
     <key name="shortcut-tile-grid-4x2" type="as">
-      <default>['&lt;Super&gt;&lt;Primary&gt;4']</default>
+      <default>['&lt;Super&gt;&lt;Primary&gt;&lt;Shift&gt;4']</default>
       <summary>Tile in 4 × 2 grid</summary>
     </key>
     <key name="shortcut-restore" type="as">
-      <default>['&lt;Super&gt;&lt;Alt&gt;0']</default>
+      <default>['&lt;Super&gt;&lt;Alt&gt;r']</default>
       <summary>Restore windows</summary>
     </key>
     <key name="shortcut-toggle-snap" type="as">
