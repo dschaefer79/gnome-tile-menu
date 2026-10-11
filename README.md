@@ -55,6 +55,17 @@ assistant: all code, packaging and documentation.
 `resolution WIDTHxHEIGHT`, `toggle snap|tileNew|disabled`, `settings`,
 `shortcuts`, `setup`, `remove`, `export FILE` and `import FILE`.
 
+## Installing
+
+On **Fedora 45**:
+
+```
+sudo dnf install https://github.com/dschaefer79/gnome-tile-menu/releases/download/v1.16/gnome-tile-menu-1.16-1.fc45.noarch.rpm
+```
+
+Log out and back in afterwards: GNOME Shell only finds newly installed
+extensions at login.
+
 ## Building the RPM
 
 ```
