@@ -57,13 +57,24 @@ assistant: all code, packaging and documentation.
 
 ## Installing
 
-On **Fedora 45**:
+From the [latest GitHub release](https://github.com/dschaefer79/gnome-tile-menu/releases/latest):
+
+| System | Desktop | Package |
+|---|---|---|
+| Fedora 45 | GNOME 51 | `gnome-tile-menu-1.17-1.fc45.noarch.rpm` |
+| Fedora 44 | GNOME 50 | `gnome-tile-menu-1.17-1.fc44.noarch.rpm` |
+| Ubuntu 26.10 | GNOME 51 | `gnome-tile-menu_1.17-1_all.deb` |
+| Debian 13 (trixie) | GNOME 48 | `gnome-tile-menu_1.17-1_all.deb` |
+
+On Fedora:
 
 ```
 sudo dnf install https://github.com/dschaefer79/gnome-tile-menu/releases/download/v1.17/gnome-tile-menu-1.17-1.fc45.noarch.rpm
 ```
 
-On **Debian 13** (trixie):
+(`fc44` instead of `fc45` on Fedora 44).
+
+On Ubuntu, Debian and Linux Mint:
 
 ```
 wget https://github.com/dschaefer79/gnome-tile-menu/releases/download/v1.17/gnome-tile-menu_1.17-1_all.deb
