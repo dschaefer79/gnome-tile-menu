@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later
+     Copyright (C) 2026 dschaefer79
+     Written entirely with Claude Code (Anthropic). -->
+<schemalist>
+  <schema id="org.gnome.shell.extensions.tilemenu" path="/org/gnome/shell/extensions/tilemenu/">
+    <key name="show-tiling-menu" type="b">
+      <default>true</default>
+      <summary>Show the Window Tiling menu in the top bar</summary>
+    </key>
+    <key name="show-resolution-menu" type="b">
+      <default>true</default>
+      <summary>Show the Resolution menu in the top bar</summary>
+    </key>
+    <key name="disabled" type="b">
+      <default>false</default>
+      <summary>Turn off all tiling and snapping; Restore windows still works</summary>
+    </key>
+    <key name="tile-new" type="b">
+      <default>false</default>
+      <summary>Tile each new window together with the others on its screen</summary>
+    </key>
+    <key name="show-auto" type="b">
+      <default>true</default>
+      <summary>Show "Tile automatically" in the menu</summary>
+    </key>
+    <key name="vertical" type="b">
+      <default>true</default>
+      <summary>Tile into columns side by side</summary>
+    </key>
+    <key name="horizontal" type="b">
+      <default>false</default>
+      <summary>Tile into rows stacked top to bottom</summary>
+    </key>
+    <key name="wide-min-width" type="i">
+      <range min="640" max="32768"/>
+      <default>5120</default>
+      <summary>Screens at least this many pixels wide count as wide</summary>
+    </key>
+    <key name="wide-columns" type="i">
+      <range min="1" max="8"/>
+      <default>3</default>
+      <summary>Columns on wide screens</summary>
+    </key>
+    <key name="normal-columns" type="i">
+      <range min="1" max="8"/>
+      <default>2</default>
+      <summary>Columns on other screens</summary>
+    </key>
+    <key name="tall-min-height" type="i">
+      <range min="480" max="32768"/>
+      <default>2160</default>
+      <summary>Screens at least this many pixels high count as tall</summary>
+    </key>
+    <key name="tall-rows" type="i">
+      <range min="1" max="8"/>
+      <default>3</default>
+      <summary>Rows on tall screens</summary>
+    </key>
+    <key name="normal-rows" type="i">
+      <range min="1" max="8"/>
+      <default>2</default>
+      <summary>Rows on other screens</summary>
+    </key>
+    <key name="gap" type="i">
+      <range min="0" max="100"/>
+      <default>0</default>
+      <summary>Gap between windows in pixels</summary>
+    </key>
+    <key name="gap-unit" type="s">
+      <choices>
+        <choice value="px"/>
+        <choice value="mm"/>
+      </choices>
+      <default>"px"</default>
+      <summary>Unit of the gap: pixels or millimetres on the screen</summary>
+    </key>
+    <key name="gap-mm" type="i">
+      <range min="0" max="50"/>
+      <default>2</default>
+      <summary>Gap between windows in millimetres</summary>
+    </key>
+    <key name="snap" type="b">
+      <default>false</default>
+      <summary>Automatic tiling: snap windows into place when dropped</summary>
+    </key>
+    <key name="snap-shift-only" type="b">
+      <default>false</default>
+      <summary>Snap only when Shift is held while dropping</summary>
+    </key>
+    <key name="snap-shift-swap" type="b">
+      <default>false</default>
+      <summary>Hold Shift while dropping to swap columns and rows</summary>
+    </key>
+    <key name="resize-neighbours" type="b">
+      <default>false</default>
+      <summary>Resize neighbouring windows together</summary>
+      <description>When the left or right edge of a window is dragged, move the edge of the window next to it along, so the two stay side by side.</description>
+    </key>
+    <key name="resolutions" type="as">
+      <default>['1920x1080', '1900x1000', '5120x1440']</default>
+      <summary>Resolutions in the Resolution menu, top to bottom</summary>
+    </key>
+    <key name="prefs-page" type="s">
+      <default>""</default>
+      <summary>Page the settings window opens on next (set by the menus)</summary>
+    </key>
+
+    <key name="shortcut-tile-auto" type="as">
+      <default>['&lt;Super&gt;&lt;Alt&gt;a']</default>
+      <summary>Tile automatically</summary>
+    </key>
+    <key name="shortcut-tile-columns-4" type="as">
+      <default>['&lt;Super&gt;&lt;Alt&gt;4']</default>
+      <summary>Tile in 4 columns</summary>
+    </key>
+    <key name="shortcut-tile-columns-3" type="as">
+      <default>['&lt;Super&gt;&lt;Alt&gt;3']</default>
+      <summary>Tile in 3 columns</summary>
+    </key>
+    <key name="shortcut-tile-columns-2" type="as">
+      <default>['&lt;Super&gt;&lt;Alt&gt;2']</default>
+      <summary>Tile in 2 columns</summary>
+    </key>
+    <key name="shortcut-tile-rows-3" type="as">
+      <default>['&lt;Super&gt;&lt;Primary&gt;&lt;Alt&gt;3']</default>
+      <summary>Tile in 3 rows</summary>
+    </key>
+    <key name="shortcut-tile-rows-2" type="as">
+      <default>['&lt;Super&gt;&lt;Primary&gt;&lt;Alt&gt;2']</default>
+      <summary>Tile in 2 rows</summary>
+    </key>
+    <key name="shortcut-tile-grid-2x2" type="as">
+      <default>['&lt;Super&gt;&lt;Primary&gt;2']</default>
+      <summary>Tile in 2 × 2 grid</summary>
+    </key>
+    <key name="shortcut-tile-grid-3x2" type="as">
+      <default>['&lt;Super&gt;&lt;Primary&gt;3']</default>
+      <summary>Tile in 3 × 2 grid</summary>
+    </key>
+    <key name="shortcut-tile-grid-4x2" type="as">
+      <default>['&lt;Super&gt;&lt;Primary&gt;4']</default>
+      <summary>Tile in 4 × 2 grid</summary>
+    </key>
+    <key name="shortcut-restore" type="as">
+      <default>['&lt;Super&gt;&lt;Alt&gt;0']</default>
+      <summary>Restore windows</summary>
+    </key>
+    <key name="shortcut-toggle-snap" type="as">
+      <default>[]</default>
+      <summary>Turn automatic tiling on or off</summary>
+    </key>
+    <key name="shortcut-toggle-tile-new" type="as">
+      <default>[]</default>
+      <summary>Turn tiling new windows on or off</summary>
+    </key>
+    <key name="shortcut-toggle-disabled" type="as">
+      <default>[]</default>
+      <summary>Disable or enable tiling</summary>
+    </key>
+  </schema>
+</schemalist>

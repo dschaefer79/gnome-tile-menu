@@ -1,0 +1,171 @@
+#!/usr/bin/sh
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2026 dschaefer79
+# Written entirely with Claude Code (Anthropic).
+# Helper for the Window Tiling and Resolution menus on GNOME Shell.
+#   gnome-tile-menu tile auto|4|3|2|rows-3|rows-2|grid-2x2|grid-3x2|grid-4x2|restore
+#   gnome-tile-menu resolution WIDTHxHEIGHT
+#   gnome-tile-menu toggle snap|tileNew|disabled   flip a switch
+#   gnome-tile-menu get-toggles       print the switches, as KEY=true|false
+#   gnome-tile-menu shortcuts         open the keyboard shortcut settings
+#   gnome-tile-menu settings          open the settings window
+#   gnome-tile-menu setup [--auto]    turn the menus (the extension) on, and
+#                                     show them again after Quit
+#   gnome-tile-menu remove            turn them off
+#   gnome-tile-menu export FILE       save the settings of both menus and the
+#                                     keyboard shortcuts to FILE
+#   gnome-tile-menu import FILE       load them from FILE
+set -u
+
+uuid=tilemenu@dschaefer79
+schema=org.gnome.shell.extensions.tilemenu
+confdir="${XDG_CONFIG_HOME:-$HOME/.config}/gnome-tile-menu"
+marker="$confdir/added"
+# Bump when the setup changes, so --auto upgrades existing users.
+setup_version=1
+
+fail() {
+    echo "gnome-tile-menu: $*" >&2
+    command -v notify-send >/dev/null 2>&1 &&
+        notify-send -a "Window Tiling" -i dialog-error "Window Tiling" "$*"
+    exit 1
+}
+
+# Call a method of the extension; prints nothing, fails with its error.
+call() {
+    out=$(gdbus call --session --dest org.gnome.Shell --object-path /org/dschaefer/TileMenu \
+        --method "org.dschaefer.TileMenu.$1" "$2" 2>&1) && return
+    case $out in
+        *UnknownMethod*|*"No such interface"*|*UnknownObject*)
+            fail "the Window Tiling extension is not running (try: gnome-tile-menu setup)" ;;
+    esac
+    fail "$(echo "$out" | sed 's/^Error: GDBus\.Error:[^:]*: //')"
+}
+
+tile() {
+    case $1 in
+        auto|4|3|2|rows-3|rows-2|grid-2x2|grid-3x2|grid-4x2|restore) call Tile "$1" ;;
+        *) fail "unknown tile action: $1" ;;
+    esac
+}
+
+resolution() {
+    case $1 in
+        [1-9]*x[1-9]*) ;;
+        *) fail "usage: gnome-tile-menu resolution WIDTHxHEIGHT" ;;
+    esac
+    case ${1%x*}${1#*x} in *[!0-9]*) fail "invalid resolution: $1" ;; esac
+    call SetResolution "$1"
+}
+
+toggle() {
+    case $1 in
+        snap|tileNew|disabled) call Toggle "$1" ;;
+        *) fail "usage: gnome-tile-menu toggle snap|tileNew|disabled" ;;
+    esac
+}
+
+get_toggles() {
+    for pair in snap:snap tileNew:tile-new disabled:disabled; do
+        echo "${pair%%:*}=$(gsettings get "$schema" "${pair#*:}")"
+    done
+}
+
+# The menus pass the page to open through the settings.
+open_settings() {
+    gsettings set "$schema" prefs-page "$1"
+    gnome-extensions prefs "$uuid" >/dev/null 2>&1 ||
+        fail "could not open the settings (is the extension installed?)"
+}
+
+shell_running() {
+    gdbus call --session --dest org.freedesktop.DBus --object-path /org/freedesktop/DBus \
+        --method org.freedesktop.DBus.NameHasOwner org.gnome.Shell 2>/dev/null | grep -q true
+}
+
+setup() {
+    if [ "${1:-}" = --auto ]; then
+        case $(cat "$marker" 2>/dev/null) in
+            "$setup_version"|removed) return ;;
+        esac
+        # At login, wait for GNOME Shell to come up.
+        i=0
+        until shell_running; do
+            i=$((i + 1))
+            [ $i -le 60 ] || exit 0
+            sleep 1
+        done
+    fi
+    if [ "$(gsettings get org.gnome.shell disable-user-extensions 2>/dev/null)" = true ]; then
+        echo "Note: extensions are turned off in the Extensions app; turn them on to see the menus." >&2
+    fi
+    if ! gnome-extensions enable "$uuid" 2>/dev/null; then
+        # GNOME Shell only finds newly installed extensions at login: list
+        # it as enabled so it starts then.
+        list=$(gsettings get org.gnome.shell enabled-extensions)
+        case $list in
+            *"'$uuid'"*) ;;
+            "@as []"|"[]") gsettings set org.gnome.shell enabled-extensions "['$uuid']" ;;
+            *) gsettings set org.gnome.shell enabled-extensions "${list%]}, '$uuid']" ;;
+        esac
+        echo "The menus appear after logging out and back in."
+    fi
+    # Bring the menus back after Quit took them off the top bar.
+    if [ "${1:-}" != --auto ]; then
+        gsettings set "$schema" show-tiling-menu true
+        gsettings set "$schema" show-resolution-menu true
+    fi
+    mkdir -p "$confdir"
+    echo "$setup_version" >"$marker"
+}
+
+remove() {
+    gnome-extensions disable "$uuid" 2>/dev/null ||
+        fail "could not reach GNOME Shell"
+    mkdir -p "$confdir"
+    echo removed >"$marker"
+}
+
+# The settings file: a [section] line, then KEY=VALUE in gsettings' syntax.
+# The settings window's own page choice is left out.
+export_settings() {
+    {
+        echo "# Window Tiling and Resolution settings, from gnome-tile-menu export"
+        echo "[$schema]"
+        for key in $(gsettings list-keys "$schema" | sort); do
+            [ "$key" = prefs-page ] || echo "$key=$(gsettings get "$schema" "$key")"
+        done
+    } >"$1.tmp" && mv -f "$1.tmp" "$1" || { rm -f "$1.tmp"; fail "could not write $1"; }
+}
+
+# Keys the file does not have keep their value; unknown keys are skipped.
+import_settings() {
+    [ -r "$1" ] || fail "cannot read $1"
+    grep -qx "\[$schema\]" "$1" || fail "$1 is not a Window Tiling settings file"
+    keys=" $(gsettings list-keys "$schema" | tr '\n' ' ')"
+    bad=""
+    while IFS= read -r line || [ -n "$line" ]; do
+        case $line in ''|'#'*|'['*) continue ;; esac
+        key=${line%%=*} value=${line#*=}
+        case $keys in *" $key "*) ;; *) continue ;; esac
+        [ "$key" != prefs-page ] || continue
+        gsettings set "$schema" "$key" "$value" 2>/dev/null || bad="$bad $key"
+    done <"$1"
+    [ -z "$bad" ] || fail "some settings in $1 were not valid and were left as they were:$bad"
+}
+
+cmd=${1:-}
+[ $# -gt 0 ] && shift
+case $cmd in
+    tile) [ $# -eq 1 ] || fail "usage: gnome-tile-menu tile auto|4|3|2|rows-3|rows-2|grid-2x2|grid-3x2|grid-4x2|restore"; tile "$1" ;;
+    resolution) [ $# -eq 1 ] || fail "usage: gnome-tile-menu resolution WIDTHxHEIGHT"; resolution "$1" ;;
+    toggle) [ $# -eq 1 ] || fail "usage: gnome-tile-menu toggle snap|tileNew|disabled"; toggle "$1" ;;
+    get-toggles) get_toggles ;;
+    shortcuts) open_settings shortcuts ;;
+    settings) open_settings tiling ;;
+    setup) setup "${1:-}" ;;
+    remove) remove ;;
+    export) [ $# -eq 1 ] || fail "usage: gnome-tile-menu export FILE"; export_settings "$1" ;;
+    import) [ $# -eq 1 ] || fail "usage: gnome-tile-menu import FILE"; import_settings "$1" ;;
+    *) sed -n '5,17s/^# \{0,1\}//p' "$0" >&2; exit 2 ;;
+esac
