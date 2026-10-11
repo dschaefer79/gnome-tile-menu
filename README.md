@@ -2,7 +2,7 @@
 
 Two menus for the GNOME Shell top bar: **Window Tiling** arranges the windows
 of the current workspace, and **Resolution** switches the screen resolution.
-Works on Wayland and X11 (GNOME Shell 49 and later).
+Works on Wayland and X11 (GNOME Shell 48 and later).
 
 This project was written entirely with
 [Claude Code](https://claude.com/claude-code), Anthropic's AI coding
@@ -60,16 +60,30 @@ assistant: all code, packaging and documentation.
 On **Fedora 45**:
 
 ```
-sudo dnf install https://github.com/dschaefer79/gnome-tile-menu/releases/download/v1.16/gnome-tile-menu-1.16-1.fc45.noarch.rpm
+sudo dnf install https://github.com/dschaefer79/gnome-tile-menu/releases/download/v1.17/gnome-tile-menu-1.17-1.fc45.noarch.rpm
+```
+
+On **Debian 13** (trixie):
+
+```
+wget https://github.com/dschaefer79/gnome-tile-menu/releases/download/v1.17/gnome-tile-menu_1.17-1_all.deb
+sudo apt install ./gnome-tile-menu_1.17-1_all.deb
 ```
 
 Log out and back in afterwards: GNOME Shell only finds newly installed
 extensions at login.
 
+## Building the .deb
+
+```
+git archive --prefix=gnome-tile-menu-1.17/ -o gnome-tile-menu-1.17.tar.gz HEAD
+packaging/build-deb.sh gnome-tile-menu-1.17.tar.gz 1.17 .
+```
+
 ## Building the RPM
 
 ```
-git archive --prefix=gnome-tile-menu-1.16/ -o ~/rpmbuild/SOURCES/gnome-tile-menu-1.16.tar.gz HEAD
+git archive --prefix=gnome-tile-menu-1.17/ -o ~/rpmbuild/SOURCES/gnome-tile-menu-1.17.tar.gz HEAD
 rpmbuild -ba gnome-tile-menu.spec
 ```
 

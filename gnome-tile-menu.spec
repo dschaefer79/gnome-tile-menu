@@ -5,7 +5,7 @@
 %global uuid tilemenu@dschaefer79
 
 Name:           gnome-tile-menu
-Version:        1.16
+Version:        1.17
 Release:        1%{?dist}
 Summary:        GNOME Shell top bar menus for window tiling and screen resolution
 License:        GPL-3.0-or-later
@@ -15,7 +15,7 @@ Source0:        %{name}-%{version}.tar.gz
 BuildRequires:  desktop-file-utils
 BuildRequires:  /usr/bin/glib-compile-schemas
 BuildRequires:  python3
-Requires:       gnome-shell >= 49
+Requires:       gnome-shell >= 48
 Requires:       /usr/bin/gdbus
 Requires:       /usr/bin/gsettings
 Requires:       /usr/bin/gnome-extensions
@@ -79,6 +79,10 @@ python3 -m json.tool %{buildroot}%{_datadir}/gnome-shell/extensions/%{uuid}/meta
 %{_datadir}/gnome-shell/extensions/%{uuid}/
 
 %changelog
+* Sun Oct 11 2026 dschaefer79 <7472357+dschaefer79@users.noreply.github.com> - 1.17-1
+- Works with GNOME Shell 48 (Debian 13) too
+- packaging/build-deb.sh builds a .deb for Debian 13
+
 * Sun Oct 11 2026 dschaefer79 <7472357+dschaefer79@users.noreply.github.com> - 1.16-1
 - Default shortcuts no longer clash with GNOME 51's own: the grids are
   Super+Ctrl+Shift+2/3/4 (GNOME opens a new window of a dash app with
