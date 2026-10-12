@@ -74,8 +74,12 @@ get_toggles() {
 # The menus pass the page to open through the settings.
 open_settings() {
     gsettings set "$schema" prefs-page "$1"
-    gnome-extensions prefs "$uuid" >/dev/null 2>&1 ||
-        fail "could not open the settings (is the extension installed?)"
+    # GNOME Shell 40 refuses while the window is open; it shows the page
+    # anyway.
+    out=$(gnome-extensions prefs "$uuid" 2>&1) || case $out in
+        *"Already showing"*) ;;
+        *) fail "could not open the settings (is the extension installed?)" ;;
+    esac
 }
 
 shell_running() {

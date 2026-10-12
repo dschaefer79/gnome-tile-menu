@@ -5,7 +5,7 @@
 %global uuid tilemenu@dschaefer79
 
 Name:           gnome-tile-menu
-Version:        1.17
+Version:        1.18
 Release:        1%{?dist}
 Summary:        GNOME Shell top bar menus for window tiling and screen resolution
 License:        GPL-3.0-or-later
@@ -15,7 +15,15 @@ Source0:        %{name}-%{version}.tar.gz
 BuildRequires:  desktop-file-utils
 BuildRequires:  /usr/bin/glib-compile-schemas
 BuildRequires:  python3
+%if 0%{?rhel} == 9
+# RHEL 9: GNOME Shell 40, with the legacy-imports extension in
+# extension-gnome40 and libadwaita 1.4 for its settings window.
+Requires:       gnome-shell >= 40
+Requires:       gnome-shell < 41
+Requires:       libadwaita
+%else
 Requires:       gnome-shell >= 48
+%endif
 Requires:       /usr/bin/gdbus
 Requires:       /usr/bin/gsettings
 Requires:       /usr/bin/gnome-extensions
@@ -60,7 +68,16 @@ install -Dpm 0644 gnome-tile-menu.desktop %{buildroot}%{_datadir}/applications/g
 install -Dpm 0644 gnome-tile-menu-setup.desktop %{buildroot}%{_sysconfdir}/xdg/autostart/gnome-tile-menu-setup.desktop
 install -Dpm 0644 org.gnome.shell.extensions.tilemenu.gschema.xml %{buildroot}%{_datadir}/glib-2.0/schemas/org.gnome.shell.extensions.tilemenu.gschema.xml
 install -dm 0755 %{buildroot}%{_datadir}/gnome-shell/extensions/%{uuid}/icons
+%if 0%{?rhel} == 9
+# tiler.js and display.js are shared: without their ES module export they
+# work as legacy imports.
+for f in tiler display; do
+    sed '/^export {.*};$/d' extension/$f.js > %{buildroot}%{_datadir}/gnome-shell/extensions/%{uuid}/$f.js
+done
+install -pm 0644 extension-gnome40/*.js extension-gnome40/metadata.json extension/stylesheet.css %{buildroot}%{_datadir}/gnome-shell/extensions/%{uuid}/
+%else
 install -pm 0644 extension/*.js extension/metadata.json extension/stylesheet.css %{buildroot}%{_datadir}/gnome-shell/extensions/%{uuid}/
+%endif
 install -pm 0644 extension/icons/*.svg %{buildroot}%{_datadir}/gnome-shell/extensions/%{uuid}/icons/
 
 %check
@@ -68,6 +85,10 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/gnome-tile-menu.deskt
 desktop-file-validate %{buildroot}%{_sysconfdir}/xdg/autostart/gnome-tile-menu-setup.desktop
 glib-compile-schemas --strict --dry-run %{buildroot}%{_datadir}/glib-2.0/schemas
 python3 -m json.tool %{buildroot}%{_datadir}/gnome-shell/extensions/%{uuid}/metadata.json >/dev/null
+%if 0%{?rhel} == 9
+# GNOME Shell 40 cannot load ES modules.
+! grep -n '^export \|^import ' %{buildroot}%{_datadir}/gnome-shell/extensions/%{uuid}/*.js
+%endif
 
 %files
 %license LICENSE
@@ -79,6 +100,13 @@ python3 -m json.tool %{buildroot}%{_datadir}/gnome-shell/extensions/%{uuid}/meta
 %{_datadir}/gnome-shell/extensions/%{uuid}/
 
 %changelog
+* Mon Oct 12 2026 dschaefer79 <7472357+dschaefer79@users.noreply.github.com> - 1.18-1
+- RHEL 9 (GNOME Shell 40): extension-gnome40 has the extension and its
+  settings window with legacy imports and libadwaita 1.4; the RPM built
+  on RHEL 9 (or Rocky or AlmaLinux 9) installs it
+- gnome-tile-menu settings|shortcuts: no error while the settings window
+  is already open (GNOME Shell 40 refuses to open it twice)
+
 * Sun Oct 11 2026 dschaefer79 <7472357+dschaefer79@users.noreply.github.com> - 1.17-1
 - Works with GNOME Shell 48 (Debian 13) too
 - packaging/build-deb.sh builds a .deb for Debian 13

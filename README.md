@@ -2,7 +2,8 @@
 
 Two menus for the GNOME Shell top bar: **Window Tiling** arranges the windows
 of the current workspace, and **Resolution** switches the screen resolution.
-Works on Wayland and X11 (GNOME Shell 48 and later).
+Works on Wayland and X11 (GNOME Shell 48 and later, and GNOME Shell 40 on
+RHEL 9).
 
 This project was written entirely with
 [Claude Code](https://claude.com/claude-code), Anthropic's AI coding
@@ -61,25 +62,36 @@ From the [latest GitHub release](https://github.com/dschaefer79/gnome-tile-menu/
 
 | System | Desktop | Package |
 |---|---|---|
-| Fedora 45 | GNOME 51 | `gnome-tile-menu-1.17-1.fc45.noarch.rpm` |
-| Fedora 44 | GNOME 50 | `gnome-tile-menu-1.17-1.fc44.noarch.rpm` |
-| Ubuntu 26.10 | GNOME 51 | `gnome-tile-menu_1.17-1_all.deb` |
-| Ubuntu 26.04 | GNOME 50 | `gnome-tile-menu_1.17-1_all.deb` |
-| Debian 13 (trixie) | GNOME 48 | `gnome-tile-menu_1.17-1_all.deb` |
+| Fedora 45 | GNOME 51 | `gnome-tile-menu-1.18-1.fc45.noarch.rpm` |
+| Fedora 44 | GNOME 50 | `gnome-tile-menu-1.18-1.fc44.noarch.rpm` |
+| Ubuntu 26.10 | GNOME 51 | `gnome-tile-menu_1.18-1_all.deb` |
+| Ubuntu 26.04 | GNOME 50 | `gnome-tile-menu_1.18-1_all.deb` |
+| Debian 13 (trixie) | GNOME 48 | `gnome-tile-menu_1.18-1_all.deb` |
+| RHEL 9, Rocky Linux 9, AlmaLinux 9 | GNOME 40 | `gnome-tile-menu-1.18-1.el9.noarch.rpm` |
 
 On Fedora:
 
 ```
-sudo dnf install https://github.com/dschaefer79/gnome-tile-menu/releases/download/v1.17/gnome-tile-menu-1.17-1.fc45.noarch.rpm
+sudo dnf install https://github.com/dschaefer79/gnome-tile-menu/releases/download/v1.18/gnome-tile-menu-1.18-1.fc45.noarch.rpm
 ```
 
 (`fc44` instead of `fc45` on Fedora 44).
 
+On RHEL 9 and its rebuilds (Rocky Linux, AlmaLinux):
+
+```
+sudo dnf install https://github.com/dschaefer79/gnome-tile-menu/releases/download/v1.18/gnome-tile-menu-1.18-1.el9.noarch.rpm
+```
+
+GNOME Shell 40 cannot load the extension in `extension/`, so the RHEL 9
+package uses [extension-gnome40/](extension-gnome40/): the same menus and
+settings window with GNOME 40's legacy imports and libadwaita 1.4.
+
 On Ubuntu and Debian:
 
 ```
-wget https://github.com/dschaefer79/gnome-tile-menu/releases/download/v1.17/gnome-tile-menu_1.17-1_all.deb
-sudo apt install ./gnome-tile-menu_1.17-1_all.deb
+wget https://github.com/dschaefer79/gnome-tile-menu/releases/download/v1.18/gnome-tile-menu_1.18-1_all.deb
+sudo apt install ./gnome-tile-menu_1.18-1_all.deb
 ```
 
 Log out and back in afterwards: GNOME Shell only finds newly installed
@@ -88,16 +100,19 @@ extensions at login.
 ## Building the .deb
 
 ```
-git archive --prefix=gnome-tile-menu-1.17/ -o gnome-tile-menu-1.17.tar.gz HEAD
-packaging/build-deb.sh gnome-tile-menu-1.17.tar.gz 1.17 .
+git archive --prefix=gnome-tile-menu-1.18/ -o gnome-tile-menu-1.18.tar.gz HEAD
+packaging/build-deb.sh gnome-tile-menu-1.18.tar.gz 1.18 .
 ```
 
 ## Building the RPM
 
 ```
-git archive --prefix=gnome-tile-menu-1.17/ -o ~/rpmbuild/SOURCES/gnome-tile-menu-1.17.tar.gz HEAD
+git archive --prefix=gnome-tile-menu-1.18/ -o ~/rpmbuild/SOURCES/gnome-tile-menu-1.18.tar.gz HEAD
 rpmbuild -ba gnome-tile-menu.spec
 ```
+
+Built on RHEL 9 (or Rocky or AlmaLinux 9), the same commands make the
+package for GNOME Shell 40.
 
 ## License
 
